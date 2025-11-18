@@ -4,134 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Ngopi Kalcer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    {{-- Menggunakan Vite untuk CSS (sama seperti halaman utama) --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Font & Icon --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-display { font-family: 'Playfair Display', serif; }
-        .bg-brand-dark { background-color: #2a231f; }
-        .text-brand-gold { color: #c8a063; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="flex h-screen overflow-hidden">
 
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-gray-100">
-
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-black opacity-50 transition-opacity lg:hidden" style="display: none;"></div>
-
-        <aside
-            x-show="sidebarOpen"
-            x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="-translate-x-full"
-            x-transition:enter-end="translate-x-0"
-            x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="translate-x-0"
-            x-transition:leave-end="-translate-x-full"
-            class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto bg-brand-dark text-white shadow-lg lg:static lg:inset-auto lg:translate-x-0 lg:flex lg:flex-shrink-0"
-            style="display: none;"
-        >
-            <div class="flex flex-col h-full">
-                <div class="flex items-center justify-center h-20 border-b border-gray-700">
-                    <h1 class="text-2xl font-bold font-display">Admin</h1>
-                </div>
-
-                <nav class="flex-1 px-4 py-6 space-y-2">
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 bg-gray-700 rounded-lg text-white">
-                        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-7-4h10"></path></svg>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-                        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span>Kelola Pesanan</span>
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-                        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                        <span>Kelola Menu</span>
-                    </a>
-                    <a href="#" class="flex items-center px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white">
-                        <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                        <span>Laporan</span>
-                    </a>
-                </nav>
-            </div>
-        </aside>
-
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="flex items-center justify-between h-20 px-6 py-4 bg-white border-b">
-                <button @click="sidebarOpen = true" class="text-gray-500 focus:outline-none lg:hidden">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-
-                <div class="flex-1"></div>
-
-                <div class="flex items-center">
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center text-sm text-gray-500 hover:text-red-600">
-                            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </div>
-            </header>
-
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-8">
-                <div class="container mx-auto">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-lg font-semibold text-gray-600">Pesanan Baru</h3>
-                            <p class="text-3xl font-bold text-gray-800">12</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-lg font-semibold text-gray-600">Total Menu Aktif</h3>
-                            <p class="text-3xl font-bold text-gray-800">{{-- 12 (Nanti ambil dari DB) --}}</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
-                            <h3 class="text-lg font-semibold text-gray-600">Pendapatan Hari Ini</h3>
-                            <p class="text-3xl font-bold text-green-600">Rp 1.250.000</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-10 bg-white rounded-lg shadow-lg overflow-hidden">
-                        <h3 class="text-xl font-semibold text-gray-800 p-6 border-b">Pesanan Masuk Terbaru</h3>
-                        <table class="w-full">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pesanan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelanggan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">#1001</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Meja 05</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">Rp 78.000</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                            Pending
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="#" class="text-indigo-600 hover:text-indigo-900">Detail</a>
-                                    </td>
-                                </tr>
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+        <div class="h-16 flex items-center px-6 bg-gray-800 border-b border-gray-700">
+            <h1 class="text-xl font-bold tracking-wider text-yellow-500">NGOPI ADMIN</h1>
         </div>
+
+        <nav class="flex-1 py-6 px-3 space-y-1">
+            <a href="#" class="flex items-center px-4 py-3 text-gray-100 bg-gray-800 rounded-lg transition-colors">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+
+            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <i data-lucide="coffee" class="w-5 h-5 mr-3"></i>
+                <span class="font-medium">Kelola Menu</span>
+            </a>
+
+            <a href="#" class="flex items-center px-4 py-3 text-gray-400 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <i data-lucide="file-text" class="w-5 h-5 mr-3"></i>
+                <span class="font-medium">Riwayat Pesanan</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <form action="{{ route('admin.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-gray-800 rounded-lg transition">
+                    <i data-lucide="log-out" class="w-4 h-4 mr-3"></i>
+                    Logout
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-6">
+            <div class="md:hidden">
+                {{-- Mobile Menu Button Placeholder --}}
+                <button class="text-gray-600"><i data-lucide="menu"></i></button>
+            </div>
+            <div class="text-gray-500 text-sm ml-auto">
+                Halo, <span class="font-bold text-gray-800">{{ auth()->guard('admin')->user()->username ?? 'Admin' }}</span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Ringkasan Hari Ini</h2>
+                <p class="text-gray-500 text-sm">Pantau performa penjualan coffee shop Anda.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-full bg-blue-50 text-blue-600 mr-4">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pesanan Masuk (Hari Ini)</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ $todaysOrders }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-full bg-yellow-50 text-yellow-600 mr-4">
+                        <i data-lucide="coffee" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Total Menu Aktif</p>
+                        <p class="text-2xl font-bold text-gray-800">{{ $totalMenus }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center">
+                    <div class="p-3 rounded-full bg-green-50 text-green-600 mr-4">
+                        <i data-lucide="banknote" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Pendapatan (Paid)</p>
+                        <p class="text-2xl font-bold text-green-600">
+                            Rp {{ number_format($todaysRevenue, 0, ',', '.') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800">Transaksi Terbaru</h3>
+                    {{-- Tombol Lihat Semua (bisa diaktifkan nanti) --}}
+                    {{-- <a href="#" class="text-sm text-blue-600 hover:underline">Lihat Semua</a> --}}
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider">
+                                <th class="px-6 py-3 font-semibold">ID Order</th>
+                                <th class="px-6 py-3 font-semibold">Pelanggan</th>
+                                <th class="px-6 py-3 font-semibold">Total</th>
+                                <th class="px-6 py-3 font-semibold">Tanggal</th>
+                                <th class="px-6 py-3 font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse($recentOrders as $order)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 text-sm font-mono text-gray-500">
+                                        {{ $order->order_number }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-800">
+                                        {{ $order->user->name ?? 'Guest' }}
+                                        <div class="text-xs text-gray-400 font-normal">{{ $order->user->email ?? '-' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm font-bold text-gray-700">
+                                        Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">
+                                        {{ $order->created_at->format('d M Y H:i') }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        @if($order->status == 'paid')
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">
+                                                Lunas
+                                            </span>
+                                        @elseif($order->status == 'unpaid')
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700 border border-yellow-200">
+                                                Belum Bayar
+                                            </span>
+                                        @elseif($order->status == 'cancelled')
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">
+                                                Batal
+                                            </span>
+                                        @else
+                                            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                                                {{ $order->status }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-12 text-center text-gray-400">
+                                        <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 opacity-50"></i>
+                                        <p>Belum ada pesanan masuk hari ini.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
     </div>
 
+    {{-- Inisialisasi Icon Lucide --}}
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

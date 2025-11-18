@@ -35,7 +35,8 @@
     </style>
 </head>
 
-<body x-data="menuApp()">
+{{-- PERUBAHAN DISINI: Menerima data menus dari controller --}}
+<body x-data="menuApp({{ Js::from($menus) }})">
 
     @include('partials.navbar')
 

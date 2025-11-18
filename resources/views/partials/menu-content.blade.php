@@ -49,7 +49,7 @@
                     <h3 x-text="menu.name" class="font-display text-2xl font-bold text-brand-dark mb-2"></h3>
                     <p class="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow" x-text="menu.description"></p>
 
-                    <button @click="openDetail(menu)" class="w-full bg-brand-dark text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition flex justify-center items-center gap-2 group-hover:shadow-lg">
+                    <button type="button" @click="openDetail(menu)" class="w-full bg-brand-dark text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition flex justify-center items-center gap-2 group-hover:shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                         <span>Pilih</span>
                     </button>

@@ -4,17 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // <-- PENTING UNTUK LOGIN
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
     /**
      * Menampilkan halaman login admin.
-     * (File: resources/views/admin/login.blade.php)
      */
     public function showLoginForm()
     {
-        // Anda perlu membuat file view ini
         return view('admin.login');
     }
 
@@ -23,24 +21,30 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // 1. Validasi data
+        // 1. Validasi data (menggunakan 'email' untuk format yang benar)
         $credentials = $request->validate([
-            'username' => 'required|string',
+            'email' => 'required|email|string', // <-- VALIDASI MENGGUNAKAN EMAIL
             'password' => 'required|string',
         ]);
 
-        // 2. Coba login menggunakan 'guard' admin
-        if (Auth::guard('admin')->attempt($credentials)) {
+        // 2. Petakan input 'email' dari form ke kolom 'username' di database
+        $loginCredentials = [
+            'username' => $credentials['email'], // <-- MENGGUNAKAN KOLOM 'username' DB
+            'password' => $credentials['password']
+        ];
+
+        // 3. Coba login menggunakan 'guard' admin
+        if (Auth::guard('admin')->attempt($loginCredentials)) {
             $request->session()->regenerate();
 
-            // 3. Jika berhasil, arahkan ke dashboard admin
+            // 4. Jika berhasil, arahkan ke dashboard admin
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        // 4. Jika gagal, kembali ke login admin dengan pesan error
+        // 5. Jika gagal, kembali ke login admin dengan pesan error
         return back()->withErrors([
-            'username' => 'Username atau password yang Anda masukkan salah.',
-        ])->onlyInput('username');
+            'email' => 'Email atau password yang Anda masukkan salah.', // <-- MENGGUNAKAN KEY 'email' untuk error
+        ])->onlyInput('email'); // <-- MENGGUNAKAN KEY 'email'
     }
 
     /**

@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // <-- IMPORT MODEL USER
-use Illuminate\Support\Facades\Hash; // <-- IMPORT HASH UNTUK PASSWORD
-use Illuminate\Support\Facades\Auth; // <-- IMPORT AUTH UNTUK LOGIN
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Admin; // Import Model Admin
 
 class AuthController extends Controller
 {
@@ -45,25 +46,40 @@ class AuthController extends Controller
     }
 
     /**
-     * FUNGSI BARU: Memproses data dari form login
+     * FUNGSI MODIFIKASI: Memproses login untuk Customer ATAU Admin.
      */
     public function loginProcess(Request $request)
     {
-        // 1. Validasi data
+        // 1. Validasi data (wajib menggunakan key 'email')
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // 2. Coba untuk login
-        if (Auth::attempt($credentials)) {
+        // --- COBA LOGIN SEBAGAI CUSTOMER (GUARD 'WEB') ---
+        if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
 
-            // 3. Jika BERHASIL, arahkan ke halaman menu
+            // Berhasil login sebagai Customer, arahkan ke menu
             return redirect()->intended(route('menu'));
         }
 
-        // 4. Jika GAGAL, kembali ke login dengan pesan error
+        // --- JIKA GAGAL, COBA LOGIN SEBAGAI ADMIN (GUARD 'ADMIN') ---
+
+        // Catatan: Admin menggunakan kolom 'username' di DB, namun kita treat sebagai email.
+        $adminCredentials = [
+            'username' => $credentials['email'], // Meneruskan input 'email' ke kolom 'username' admin DB
+            'password' => $credentials['password'],
+        ];
+
+        if (Auth::guard('admin')->attempt($adminCredentials, $request->has('remember'))) {
+            $request->session()->regenerate();
+
+            // Berhasil login sebagai Admin, arahkan ke dashboard
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        // --- JIKA KEDUANYA GAGAL ---
         return back()->withErrors([
             'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');

@@ -1,5 +1,6 @@
 <script>
-    function menuApp() {
+    // PERUBAHAN DISINI: Menambahkan parameter initialData
+    function menuApp(initialData) {
         return {
             cart: [],
             activeTab: 'minuman',
@@ -22,20 +23,8 @@
             receiptDate: '',
             orderId: '',
 
-            menus: [
-                { id: 1, name: 'Caffe Latte', price: 28000, category: 'minuman', description: 'Espresso dengan susu segar yang lembut.', image: '{{ asset('images/menu/cafe-latte.png') }}' },
-                { id: 2, name: 'Matcha Latte', price: 26000, category: 'minuman', description: 'Bubuk matcha Jepang asli dengan susu.', image: '{{ asset('images/menu/Matcha-Lattee.png') }}' },
-                { id: 3, name: 'Signature Americano', price: 22000, category: 'minuman', description: 'Espresso shot ganda dengan air panas.', image: '{{ asset('images/menu/Signature-Americano.png') }}' },
-                { id: 4, name: 'Signature Chocolate', price: 28000, category: 'minuman', description: 'Cokelat premium Belgia yang kaya rasa.', image: '{{ asset('images/menu/signature-chocolate.png') }}' },
-                { id: 5, name: 'Espresso', price: 18000, category: 'minuman', description: 'Ekstrak kopi murni yang kuat dan nikmat.', image: '{{ asset('images/menu/espresso.png') }}' },
-                { id: 9, name: 'Kopi Tubruk', price: 20000, category: 'minuman', description: 'Kopi hitam tradisional dengan ampas.', image: '{{ asset('images/menu/kopi-tubruk.png') }}' },
-                { id: 6, name: 'Butter Croissant', price: 22000, category: 'makanan', description: 'Pastry renyah dengan mentega Prancis.', image: '{{ asset('images/menu/butter-croissant.png') }}' },
-                { id: 7, name: 'Choco Chip Cookies', price: 15000, category: 'makanan', description: 'Kue kering manis dengan butiran cokelat.', image: '{{ asset('images/menu/choco-chip-cookies.png') }}' },
-                { id: 8, name: 'Tuna Sandwich', price: 30000, category: 'makanan', description: 'Roti lapis isi tuna dan sayuran segar.', image: '{{ asset('images/menu/tuna-sandwich.png') }}' },
-                { id: 10, name: 'Red Velvet Cake', price: 32000, category: 'makanan', description: 'Kue lembut dengan krim keju yang manis.', image: '{{ asset('images/menu/red-velvet-cake.png') }}' },
-                { id: 11, name: 'Kentang Goreng', price: 20000, category: 'makanan', description: 'Kentang goreng renyah bumbu spesial.', image: '{{ asset('images/menu/kentang-goreng.png') }}' },
-                { id: 12, name: 'Banana Bread', price: 25000, category: 'makanan', description: 'Roti pisang lembut, manis alami.', image: '{{ asset('images/menu/banana-bread.png') }}' }
-            ],
+            // PERUBAHAN DISINI: Menggunakan data dari database
+            menus: initialData,
 
             get filteredMenus() {
                 return this.menus.filter(menu => {

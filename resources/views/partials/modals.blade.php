@@ -1,7 +1,7 @@
 <div x-show="isDetailModalOpen" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="display: none;" x-transition>
     <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative" @click.outside="isDetailModalOpen = false">
 
-        <button @click="isDetailModalOpen = false" class="absolute top-4 right-4 z-10 bg-white rounded-full p-1 shadow hover:bg-gray-100">
+        <button type="button" @click="isDetailModalOpen = false" class="absolute top-4 right-4 z-10 bg-white rounded-full p-1 shadow hover:bg-gray-100">
             <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
 
@@ -22,22 +22,10 @@
                     <div x-show="selectedMenu.category === 'minuman'" class="mb-6">
                         <h4 class="text-sm font-bold text-gray-700 mb-3">Level Gula</h4>
                         <div class="grid grid-cols-4 gap-2">
-                            <div class="relative">
-                                <input type="radio" id="sugar0" name="sugar" value="0%" class="peer hidden" x-model="detailSugar">
-                                <label for="sugar0" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">0%</label>
-                            </div>
-                            <div class="relative">
-                                <input type="radio" id="sugar50" name="sugar" value="50%" class="peer hidden" x-model="detailSugar">
-                                <label for="sugar50" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Less</label>
-                            </div>
-                            <div class="relative">
-                                <input type="radio" id="sugar100" name="sugar" value="100%" class="peer hidden" x-model="detailSugar">
-                                <label for="sugar100" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Normal</label>
-                            </div>
-                            <div class="relative">
-                                <input type="radio" id="sugar125" name="sugar" value="125%" class="peer hidden" x-model="detailSugar">
-                                <label for="sugar125" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Extra</label>
-                            </div>
+                            <div class="relative"><input type="radio" id="sugar0" name="sugar" value="0%" class="peer hidden" x-model="detailSugar"><label for="sugar0" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">0%</label></div>
+                            <div class="relative"><input type="radio" id="sugar50" name="sugar" value="50%" class="peer hidden" x-model="detailSugar"><label for="sugar50" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Less</label></div>
+                            <div class="relative"><input type="radio" id="sugar100" name="sugar" value="100%" class="peer hidden" x-model="detailSugar"><label for="sugar100" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Normal</label></div>
+                            <div class="relative"><input type="radio" id="sugar125" name="sugar" value="125%" class="peer hidden" x-model="detailSugar"><label for="sugar125" class="block text-center border border-gray-300 rounded-lg py-2 text-xs font-semibold text-gray-500 cursor-pointer hover:bg-gray-50 transition select-none">Extra</label></div>
                         </div>
                     </div>
                 </div>
@@ -47,13 +35,13 @@
                 <div class="flex items-center justify-between mb-6 bg-gray-50 p-3 rounded-xl">
                     <span class="text-gray-700 font-medium text-sm">Jumlah</span>
                     <div class="flex items-center space-x-4">
-                        <button @click="if(detailQuantity > 1) detailQuantity--" class="w-8 h-8 rounded-full bg-white shadow text-gray-600 hover:text-brand-dark font-bold">-</button>
+                        <button type="button" @click="if(detailQuantity > 1) detailQuantity--" class="w-8 h-8 rounded-full bg-white shadow text-gray-600 hover:text-brand-dark font-bold">-</button>
                         <span x-text="detailQuantity" class="text-lg font-bold w-6 text-center"></span>
-                        <button @click="detailQuantity++" class="w-8 h-8 rounded-full bg-white shadow text-gray-600 hover:text-brand-dark font-bold">+</button>
+                        <button type="button" @click="detailQuantity++" class="w-8 h-8 rounded-full bg-white shadow text-gray-600 hover:text-brand-dark font-bold">+</button>
                     </div>
                 </div>
 
-                <button @click="addToCartFromDetail()" class="w-full bg-brand-dark text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition shadow-lg flex justify-center items-center gap-2">
+                <button type="button" @click="addToCartFromDetail()" class="w-full bg-brand-dark text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-800 transition shadow-lg flex justify-center items-center gap-2">
                     <span>Masuk Keranjang</span>
                     <template x-if="selectedMenu">
                         <span class="text-sm font-normal opacity-80" x-text="'(' + formatCurrency(selectedMenu.price * detailQuantity) + ')'"></span>
@@ -71,14 +59,14 @@
                 <h3 class="font-display text-2xl font-bold text-brand-dark">Keranjang Saya</h3>
                 <p class="text-sm text-gray-500">Periksa pesanan Anda sebelum bayar</p>
             </div>
-            <button @click="isModalOpen = false" class="p-2 hover:bg-gray-200 rounded-full transition"><svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            <button type="button" @click="isModalOpen = false" class="p-2 hover:bg-gray-200 rounded-full transition"><svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
 
         <div class="p-6 overflow-y-auto flex-1 space-y-4">
             <template x-if="cart.length === 0">
                 <div class="text-center py-12">
                     <p class="text-gray-500 font-medium">Keranjang masih kosong.</p>
-                    <button @click="isModalOpen = false" class="mt-4 text-brand-gold font-bold hover:underline text-sm">Tambah Menu</button>
+                    <button type="button" @click="isModalOpen = false" class="mt-4 text-brand-gold font-bold hover:underline text-sm">Tambah Menu</button>
                 </div>
             </template>
 
@@ -98,7 +86,7 @@
                     </div>
                     <div class="flex flex-col items-end gap-2">
                         <span x-text="formatCurrency(item.price * item.quantity)" class="font-bold text-brand-dark"></span>
-                        <button @click="removeItem(item.cartId)" class="text-xs text-red-500 hover:underline">Hapus</button>
+                        <button type="button" @click="removeItem(item.cartId)" class="text-xs text-red-500 hover:underline">Hapus</button>
                     </div>
                 </div>
             </template>
@@ -111,7 +99,7 @@
                 <div class="border-t border-gray-300 my-2"></div>
                 <div class="flex justify-between text-xl font-bold text-brand-dark"><span>Total Bayar</span><span x-text="formatCurrency(grandTotal)"></span></div>
             </div>
-            <button @click="processPayment()" class="w-full bg-brand-dark text-white font-bold py-4 rounded-xl shadow-lg hover:bg-gray-800 transition">Bayar Sekarang</button>
+            <button type="button" @click.prevent="processPayment()" class="w-full bg-brand-dark text-white font-bold py-4 rounded-xl shadow-lg hover:bg-gray-800 transition">Bayar Sekarang</button>
         </div>
     </div>
 </div>
@@ -146,7 +134,7 @@
             <div class="absolute -bottom-3 left-0 w-full h-6 bg-white" style="clip-path: polygon(0% 0%, 5% 100%, 10% 0%, 15% 100%, 20% 0%, 25% 100%, 30% 0%, 35% 100%, 40% 0%, 45% 100%, 50% 0%, 55% 100%, 60% 0%, 65% 100%, 70% 0%, 75% 100%, 80% 0%, 85% 100%, 90% 0%, 95% 100%, 100% 0%);"></div>
         </div>
         <div class="p-4 bg-transparent mt-4">
-            <button @click="closeReceipt()" class="w-full bg-gray-900 hover:bg-black text-white py-3 font-bold rounded-xl shadow-lg transition">Tutup</button>
+            <button type="button" @click="closeReceipt()" class="w-full bg-gray-900 hover:bg-black text-white py-3 font-bold rounded-xl shadow-lg transition">Tutup</button>
         </div>
     </div>
 </div>

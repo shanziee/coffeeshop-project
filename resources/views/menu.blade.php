@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu - Ngopi Kalcer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <style>
-        /* ... (Style Anda tetap sama) ... */
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background-color: #f8f5f2; }
         .font-display { font-family: 'Playfair Display', serif; }
@@ -39,16 +41,13 @@
     biayaLayanan: 4000,
     isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
 
-    // ARRAY MENU ANDA - pastikan tidak ada kesalahan sintaks
     menus: [
-        // Minuman
         { id: 1, name: 'Caffe Latte', price: 28000, description: 'Perpaduan seimbang antara espresso kaya rasa dan susu steam yang lembut.', image: '{{ asset('images/menu/cafe-latte.png') }}', category: 'minuman' },
         { id: 2, name: 'Matcha Latte', price: 26000, description: 'Bubuk matcha premium dari Jepang dengan susu pilihan, disajikan hangat atau dingin.', image: '{{ asset('images/menu/Matcha-Lattee.png') }}', category: 'minuman' },
         { id: 3, name: 'Signature Americano', price: 22000, description: 'Espresso shot ganda disajikan dengan air panas, untuk rasa kopi yang kuat.', image: '{{ asset('images/menu/Signature-Americano.png') }}', category: 'minuman' },
         { id: 4, name: 'Signature Chocolate', price: 28000, description: 'Cokelat premium hangat atau dingin, disajikan dengan susu lembut.', image: '{{ asset('images/menu/signature-chocolate.png') }}', category: 'minuman' },
         { id: 5, name: 'Espresso', price: 18000, description: 'Ekstrak kopi murni kaya rasa (single shot) untuk penikmat kopi sejati.', image: '{{ asset('images/menu/espresso.png') }}', category: 'minuman' },
         { id: 9, name: 'Kopi Tubruk', price: 20000, description: 'Kopi hitam tradisional Indonesia diseduh langsung dengan air panas.', image: '{{ asset('images/menu/kopi-tubruk.png') }}', category: 'minuman' },
-        // Makanan
         { id: 6, name: 'Butter Croissant', price: 22000, description: 'Pastry renyah dengan mentega premium, teman sempurna untuk kopi Anda.', image: '{{ asset('images/menu/butter-croissant.png') }}', category: 'makanan' },
         { id: 7, name: 'Choco Chip Cookies', price: 15000, description: 'Kue kering renyah dengan butiran cokelat yang meleleh di mulut.', image: '{{ asset('images/menu/choco-chip-cookies.png') }}', category: 'makanan' },
         { id: 8, name: 'Tuna Sandwich', price: 30000, description: 'Roti gandum utuh diisi dengan salad tuna, sayuran segar, dan mayones.', image: '{{ asset('images/menu/tuna-sandwich.png') }}', category: 'makanan' },
@@ -57,22 +56,16 @@
         { id: 12, name: 'Banana Bread', price: 25000, description: 'Kue pisang panggang yang hangat dan kaya rasa, dengan aroma kayu manis.', image: '{{ asset('images/menu/banana-bread.png') }}', category: 'makanan' }
     ],
 
-    // FUNGSI PINTAR UNTUK MEMFILTER
     get filteredMenus() {
-        // 1. Mulai dengan filter berdasarkan tab (Minuman/Makanan)
         let items = this.menus.filter(menu => menu.category === this.activeTab);
-
-        // 2. Jika ada query pencarian, filter lagi
         if (this.searchQuery.trim() !== '') {
             items = items.filter(menu =>
                 menu.name.toLowerCase().includes(this.searchQuery.trim().toLowerCase())
             );
         }
-
         return items;
     },
 
-    // FUNGSI-FUNGSI LAINNYA
     attemptAddToCart(item) {
         if (this.isLoggedIn) {
             this.addToCart(item);
@@ -143,6 +136,12 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                         <span>{{ Str::limit(auth()->user()->name, 10) }}</span>
                     </a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="flex items-center space-x-2 hover:text-brand-gold transition-colors duration-300 ml-2">
+                           <small>(Logout)</small>
+                        </button>
+                    </form>
                 @else
                     <a href="{{ url('/login') }}" class="flex items-center space-x-2 hover:text-brand-gold transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>

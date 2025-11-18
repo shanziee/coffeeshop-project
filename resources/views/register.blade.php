@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - Ngopi Kalcer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -16,7 +19,7 @@
         .bg-brand-dark { background-color: #4a3f35; }
         .text-brand-dark { color: #4a3f35; }
         .btn-brand {
-            background-color: #c8a063; /* Emas/Kuning Mustard */
+            background-color: #c8a063;
             color: #ffffff;
             transition: all 0.3s;
         }
@@ -31,7 +34,7 @@
         <div class="w-full max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden md:flex">
 
             <div class="w-full md:w-1/2 h-64 md:h-auto bg-cover bg-center" style="background-image: url('{{ asset('images/home.png') }}')">
-                </div>
+            </div>
 
             <div class="w-full md:w-1/2 p-8 md:p-12">
                 <h1 class="text-3xl font-bold text-brand-dark mb-2">Ngopi Kalcer</h1>

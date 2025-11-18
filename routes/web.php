@@ -2,24 +2,23 @@
 
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
 // --- IMPORT CONTROLLER KITA ---
 
 // Controller untuk Halaman Pelanggan
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AuthController; // Untuk login/register pelanggan
+use App\Http\Controllers\CheckoutController; // <-- TAMBAHKAN INI (Controller Baru)
 
 // Controller untuk Halaman Admin
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 
 
-// --- RUTE PELANGGAN (YANG DILIHAT PENGUNJUNG) ---
+/*
+|--------------------------------------------------------------------------
+| Web Routes (Rute Pelanggan)
+|--------------------------------------------------------------------------
+*/
 
 // Halaman Utama (Menu)
 // URL: /
@@ -39,7 +38,19 @@ Route::post('/register', [AuthController::class, 'registerProcess']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
-// --- RUTE KHUSUS ADMIN (YANG DILIHAT ADMIN) ---
+// --- RUTE YANG MEMBUTUHKAN LOGIN (PELANGGAN) ---
+Route::middleware('auth')->group(function () {
+    // Rute untuk memproses checkout (Minta Token Midtrans)
+    // URL: /checkout/process
+    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes (Rute Khusus Admin)
+|--------------------------------------------------------------------------
+*/
 
 Route::prefix('admin')->name('admin.')->group(function () {
 

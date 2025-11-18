@@ -56,10 +56,16 @@
                 </button>
 
                 @auth
-                    <div class="hidden md:flex flex-col text-right leading-tight">
-                        <span class="text-xs text-gray-400">Halo,</span>
-                        <span class="font-semibold text-sm">{{ Str::limit(auth()->user()->name, 10) }}</span>
-                    </div>
+                    {{-- Tombol Logout Diperbarui --}}
+                    <button @click="showLogoutModal = true" class="flex items-center space-x-2 hover:text-red-400 transition duration-300 group text-left">
+                        <div class="hidden md:flex flex-col text-right leading-tight">
+                            <span class="text-xs text-gray-400 group-hover:text-red-300 transition">Halo,</span>
+                            <span class="font-semibold text-sm">{{ Str::limit(auth()->user()->name, 10) }}</span>
+                        </div>
+                        <svg class="h-6 w-6 text-gray-400 group-hover:text-red-500 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
                 @else
                     <a href="{{ url('/login') }}" class="text-sm font-bold bg-brand-gold text-white px-5 py-2 rounded-full hover:bg-yellow-600 transition shadow-lg">Login</a>
                 @endauth
@@ -201,6 +207,7 @@
         </div>
     </footer>
 
+    {{-- MODAL DETAIL MENU --}}
     <div x-show="isDetailModalOpen"
          class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
          style="display: none;"
@@ -271,6 +278,7 @@
         </div>
     </div>
 
+    {{-- MODAL KERANJANG --}}
     <div x-show="isModalOpen"
          class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center z-50"
          style="display: none;"
@@ -327,6 +335,7 @@
         </div>
     </div>
 
+    {{-- MODAL STRUK --}}
     <div x-show="showReceipt" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="display: none;" x-transition>
         <div class="bg-white w-full max-w-sm p-0 shadow-2xl relative transform transition-all scale-100" @click.outside="closeReceipt()">
             <div class="bg-white p-8 relative pattern-paper">
@@ -362,6 +371,32 @@
         </div>
     </div>
 
+    {{-- MODAL LOGOUT --}}
+    <div x-show="showLogoutModal"
+         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100]"
+         style="display: none;"
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90">
+
+        <div class="bg-white w-full max-w-sm p-6 rounded-xl shadow-2xl relative" @click.outside="showLogoutModal = false">
+            <h3 class="font-display text-xl font-bold text-brand-dark mb-3">Konfirmasi Logout</h3>
+
+            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin logout dari akun <span class="font-semibold text-brand-dark">{{ auth()->user()->name ?? 'Pelanggan' }}</span>?</p>
+
+            <div class="flex justify-end space-x-3">
+                <button @click="showLogoutModal = false" class="px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+                    Batal
+                </button>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         function menuApp() {
             return {
@@ -373,6 +408,7 @@
                 isModalOpen: false,         // Modal Keranjang
                 isDetailModalOpen: false,   // Modal Detail Menu
                 showReceipt: false,         // Modal Struk
+                showLogoutModal: false,     // Modal Logout
 
                 isLoggedIn: {{ auth()->check() ? 'true' : 'false' }},
 

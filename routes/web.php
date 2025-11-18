@@ -1,72 +1,66 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// --- IMPORT CONTROLLER KITA ---
-
-// Controller untuk Halaman Pelanggan
 use App\Http\Controllers\MenuController;
-use App\Http\Controllers\AuthController; // Untuk login/register pelanggan
-use App\Http\Controllers\CheckoutController; // <-- TAMBAHKAN INI (Controller Baru)
-
-// Controller untuk Halaman Admin
-use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\DashboardController;
-
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\MidtransController; // <-- Baru (Langkah 4)
+use App\Http\Controllers\Admin\AuthController as AdminAuthController; // Alias untuk Admin Auth
+use App\Http\Controllers\Admin\DashboardController; // Baru (Langkah 3)
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes (Rute Pelanggan)
+| Public Routes & Pelanggan Routes
 |--------------------------------------------------------------------------
 */
 
-// Halaman Utama (Menu)
-// URL: /
+// Halaman utama
 Route::get('/', [MenuController::class, 'showMenu'])->name('menu');
 
-// Halaman Login Pelanggan
-// URL: /login
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'loginProcess']);
-
-// Halaman Registrasi Pelanggan
-// URL: /register
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'registerProcess']);
-
-// Rute Logout Pelanggan
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-// --- RUTE YANG MEMBUTUHKAN LOGIN (PELANGGAN) ---
+// Rute Checkout (Membutuhkan Login)
 Route::middleware('auth')->group(function () {
-    // Rute untuk memproses checkout (Minta Token Midtrans)
-    // URL: /checkout/process
-    Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
 });
 
+// Autentikasi Pelanggan (Juga bisa digunakan Admin)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'loginProcess']); // Sudah diperbarui untuk handle Admin/User
+
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'registerProcess'])->name('register.process');
+});
+
+// Logout Pelanggan
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Rute Notifikasi Midtrans (Public, tidak butuh login)
+Route::post('/midtrans/callback', [MidtransController::class, 'callback'])->name('midtrans.callback'); // <-- Baru (Langkah 4)
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (Rute Khusus Admin)
+| Admin Routes
 |--------------------------------------------------------------------------
+| Rute ini dilindungi oleh guard 'admin'.
 */
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // Halaman login admin
-    // URL: /admin/login
-    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AdminAuthController::class, 'login']);
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+    // --- Rute Login Admin (Masih dipertahankan, walau sudah bisa via /login) ---
+    // Gunakan middleware guest:admin agar yang sudah login tidak bisa akses
+    Route::middleware('guest:admin')->group(function () {
+        Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('login', [AdminAuthController::class, 'login']);
+    });
 
-    // Halaman yang butuh login admin
+    // --- Rute yang Hanya Bisa Diakses Admin ---
+    // Gunakan middleware auth:admin agar hanya admin yang bisa akses
     Route::middleware('auth:admin')->group(function () {
+        Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-        // Halaman dashboard admin
-        // URL: /admin/dashboard
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        // Dashboard Admin (Langkah 3)
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // (Nanti tambahkan rute kelola menu, kelola pesanan, dll di sini)
+        // Rute lain untuk CRUD Product, dll. bisa ditambahkan di sini.
     });
 });

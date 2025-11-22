@@ -61,14 +61,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Dashboard Admin
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Fitur Kelola Pesanan (Baru)
+        // --- CRUD Menu (FITUR BARU) ---
+        // Menyimpan Menu Baru
+        Route::post('menu', [DashboardController::class, 'storeMenu'])->name('menu.store');
+        // Mengupdate Menu
+        Route::put('menu/{id}', [DashboardController::class, 'updateMenu'])->name('menu.update');
+        // Menghapus Menu
+        Route::delete('menu/{id}', [DashboardController::class, 'destroyMenu'])->name('menu.destroy');
+
+        // --- Fitur Kelola Pesanan ---
         // 1. Tandai Lunas (Paid)
         Route::post('orders/{id}/mark-paid', [DashboardController::class, 'markAsPaid'])->name('orders.markPaid');
 
         // 2. Cetak Struk (Thermal Printer)
         Route::get('orders/{id}/print', [DashboardController::class, 'printReceipt'])->name('orders.print');
-
-        // Rute CRUD Menu (Opsional, jika nanti dibuat)
-        // Route::resource('products', ProductController::class);
     });
 });

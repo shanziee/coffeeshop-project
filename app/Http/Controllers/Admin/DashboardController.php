@@ -4,38 +4,30 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Order;   // Import Model Order
 use App\Models\Product; // Import Model Product
-use Carbon\Carbon;      // Import Carbon untuk tanggal
+use App\Models\Order;   // Import Model Order
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Hitung Pesanan Baru (Pesanan yang masuk hari ini)
-        $todaysOrders = Order::whereDate('created_at', Carbon::today())->count();
+        // 1. Ambil Data Statistik Ringkas
+        $totalPendapatan = Order::where('status', 'paid')->sum('total_price');
+        $totalOrder = Order::count();
+        $totalMenu = Product::count();
 
-        // 2. Hitung Total Menu Aktif
-        $totalMenus = Product::count();
+        // 2. Ambil Data untuk Tab "Kelola Menu"
+        $products = Product::all();
 
-        // 3. Hitung Pendapatan Hari Ini (Hanya yang statusnya 'paid')
-        // Catatan: Karena belum ada callback Midtrans (Langkah 4), nilai ini mungkin masih 0 jika semua status 'unpaid'.
-        $todaysRevenue = Order::whereDate('created_at', Carbon::today())
-            ->where('status', 'paid')
-            ->sum('total_price');
+        // 3. Ambil Data untuk Tab "Riwayat Pesanan" (Include detail item)
+        $orders = Order::with(['user', 'items.product'])->latest()->get();
 
-        // 4. Ambil 5 Pesanan Terbaru untuk Tabel
-        $recentOrders = Order::with('user') // Eager load relasi user agar hemat query
-            ->latest()
-            ->take(5)
-            ->get();
-
-        // Kirim semua data ke view
-        return view('admin.dashboard', compact(
-            'todaysOrders',
-            'totalMenus',
-            'todaysRevenue',
-            'recentOrders'
-        ));
+        return view('admin.dashboard', [
+            'totalPendapatan' => $totalPendapatan,
+            'totalOrder' => $totalOrder,
+            'totalMenu' => $totalMenu,
+            'products' => $products,
+            'orders' => $orders
+        ]);
     }
 }

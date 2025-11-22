@@ -35,8 +35,8 @@
     </style>
 </head>
 
-{{-- PERUBAHAN DISINI: Menerima data menus dari controller --}}
-<body x-data="menuApp({{ Js::from($menus) }})">
+{{-- PERUBAHAN: Menambahkan parameter kedua $orders ke menuApp --}}
+<body x-data="menuApp({{ Js::from($menus) }}, {{ Js::from($orders ?? []) }})">
 
     @include('partials.navbar')
 
@@ -46,6 +46,7 @@
 
     @include('partials.footer')
 
+    {{-- Pastikan kode Sidebar Keranjang/Riwayat Baru ada di dalam sini --}}
     @include('partials.modals')
 
     @include('partials.scripts')

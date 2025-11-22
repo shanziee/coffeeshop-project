@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Product; // <-- Import Model Product
+use Illuminate\Support\Facades\Auth; // Penting untuk cek login
+use App\Models\Product;
+use App\Models\Order; // Penting untuk ambil data pesanan
 
 class MenuController extends Controller
 {
@@ -12,12 +14,10 @@ class MenuController extends Controller
      */
     public function showMenu()
     {
-        // Ambil semua data produk dari database
+        // 1. AMBIL DATA PRODUK
         $menus = Product::all();
 
-        // Kita perlu memodifikasi URL gambar agar menggunakan asset() helper
-        // Namun karena kita akan kirim ke JS, kita bisa lakukan di map atau biarkan view menangani pathnya.
-        // Untuk amannya, kita format sedikit agar siap pakai di frontend.
+        // Format data produk agar siap pakai di frontend
         $formattedMenus = $menus->map(function($item) {
             return [
                 'id' => $item->id,
@@ -25,11 +25,24 @@ class MenuController extends Controller
                 'price' => $item->price,
                 'category' => $item->category,
                 'description' => $item->description,
-                'image' => asset($item->image), // Generate URL lengkap
+                // KEMBALI KE KODE ASLI ANDA: Tanpa 'storage/'
+                'image' => asset($item->image),
             ];
         });
 
-        // Kirim data $formattedMenus ke view dengan nama variabel 'menus'
-        return view('menu', ['menus' => $formattedMenus]);
+        // 2. AMBIL DATA RIWAYAT PESANAN (Fitur Baru)
+        // Jika user login, ambil pesanan mereka. Jika tidak, kosong.
+        $orders = Auth::check()
+            ? Order::where('user_id', Auth::id())
+                    ->with('items.product') // Load detail item & produk
+                    ->latest() // Urutan terbaru diatas
+                    ->get()
+            : collect();
+
+        // 3. KIRIM KE VIEW
+        return view('menu', [
+            'menus' => $formattedMenus,
+            'orders' => $orders
+        ]);
     }
 }

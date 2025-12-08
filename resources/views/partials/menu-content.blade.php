@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <template x-if="filteredMenus.length === 0">
             <div class="col-span-full text-center py-12 text-gray-500">
                 <p class="text-xl">Menu tidak ditemukan.</p>
@@ -37,16 +37,19 @@
         </template>
 
         <template x-for="menu in filteredMenus" :key="menu.id">
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group border border-gray-100 flex flex-col">
-                <div class="relative overflow-hidden h-64">
-                    <img :src="menu.image" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
-                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition duration-300"></div>
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group border border-gray-100 flex flex-col h-full">
+
+                <div class="relative w-full h-72 bg-white flex items-center justify-center overflow-hidden">
+                    <img :src="menu.image"
+                         :alt="menu.name"
+                         class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">
                 </div>
-                <div class="p-6 relative flex flex-col flex-grow">
-                    <div class="absolute -top-6 right-6 bg-brand-gold text-white px-4 py-2 rounded-lg shadow-md font-bold text-lg">
+
+                <div class="p-6 relative flex flex-col flex-grow bg-white z-10">
+                    <div class="absolute -top-10 right-6 bg-brand-gold text-white px-4 py-2 rounded-lg shadow-md font-bold text-lg">
                         <span x-text="formatCurrency(menu.price)"></span>
                     </div>
-                    <h3 x-text="menu.name" class="font-display text-2xl font-bold text-brand-dark mb-2"></h3>
+                    <h3 x-text="menu.name" class="font-display text-2xl font-bold text-brand-dark mb-2 mt-2"></h3>
                     <p class="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow" x-text="menu.description"></p>
 
                     <button type="button" @click="openDetail(menu)" class="w-full bg-brand-dark text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition flex justify-center items-center gap-2 group-hover:shadow-lg">
@@ -57,4 +60,3 @@
             </div>
         </template>
     </div>
-</main>

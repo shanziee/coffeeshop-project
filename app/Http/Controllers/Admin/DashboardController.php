@@ -43,9 +43,9 @@ class DashboardController extends Controller
         // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|in:makanan,minuman', // Sesuaikan dengan enum di database
+            'category' => 'required|in:makanan,minuman',
             'price' => 'required|integer',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Wajib upload gambar
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'description' => 'nullable|string'
         ]);
 
@@ -53,12 +53,13 @@ class DashboardController extends Controller
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            // Nama file unik: waktu_nama-asli
             $filename = time() . '_' . $file->getClientOriginalName();
-            // Simpan ke folder 'public/images/menu'
-            $file->storeAs('public/images/menu', $filename);
-            // Path yang disimpan ke database (sesuai cara pemanggilan di view)
-            $imagePath = 'images/menu/' . $filename;
+
+            // PERBAIKAN 1: Tambahkan 'public' sebagai parameter ke-3 agar masuk disk yang benar
+            $file->storeAs('images/menu', $filename, 'public');
+
+            // PERBAIKAN 2: Tambahkan 'storage/' agar path bisa dibaca browser
+            $imagePath = 'storage/images/menu/' . $filename;
         }
 
         // Simpan ke Database
@@ -80,7 +81,6 @@ class DashboardController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        // Validasi (image jadi nullable/opsional karena mungkin tidak diganti)
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|in:makanan,minuman',
@@ -98,19 +98,25 @@ class DashboardController extends Controller
 
         // Jika ada gambar baru yang diupload
         if ($request->hasFile('image')) {
-            // 1. Hapus gambar lama jika ada
-            if ($product->image && Storage::exists('public/' . $product->image)) {
-                Storage::delete('public/' . $product->image);
-            } elseif ($product->image && file_exists(public_path($product->image))) {
-                 // Fallback jika gambar ada di folder public biasa (bukan symlink storage)
-                 @unlink(public_path($product->image));
+
+            // PERBAIKAN 3: Logika Hapus Gambar Lama yang lebih aman
+            if ($product->image) {
+                // Kita perlu menghapus prefix 'storage/' untuk mendapatkan path file asli di disk
+                $oldPath = str_replace('storage/', '', $product->image);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
             }
 
-            // 2. Upload gambar baru
+            // Upload gambar baru
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/images/menu', $filename);
-            $data['image'] = 'images/menu/' . $filename;
+
+            // Simpan ke disk 'public'
+            $file->storeAs('images/menu', $filename, 'public');
+
+            // Simpan path dengan 'storage/'
+            $data['image'] = 'storage/images/menu/' . $filename;
         }
 
         $product->update($data);
@@ -125,11 +131,14 @@ class DashboardController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        // Hapus file gambar terkait dari storage agar tidak menumpuk
-        if ($product->image && Storage::exists('public/' . $product->image)) {
-            Storage::delete('public/' . $product->image);
-        } elseif ($product->image && file_exists(public_path($product->image))) {
-             @unlink(public_path($product->image));
+        // PERBAIKAN 4: Logika Hapus Gambar saat Delete Menu
+        if ($product->image) {
+            // Hapus prefix 'storage/' agar path sesuai dengan struktur folder di disk public
+            $relativePath = str_replace('storage/', '', $product->image);
+
+            if (Storage::disk('public')->exists($relativePath)) {
+                Storage::disk('public')->delete($relativePath);
+            }
         }
 
         $product->delete();

@@ -4,21 +4,48 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Product; // Import Model Product
-use App\Models\Order;   // Import Model Order
-use Illuminate\Support\Facades\Storage; // PENTING: Tambahkan ini untuk kelola file gambar
+use App\Models\Product;
+use App\Models\Order;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    /**
-     * Menampilkan Dashboard Admin dengan Statistik dan Data.
-     */
     public function index()
     {
-        // 1. Ambil Data Statistik Ringkas
+        // 1. Ambil Data Statistik Ringkas (Existing)
         $totalPendapatan = Order::where('status', 'paid')->sum('total_price');
         $totalOrder = Order::count();
         $totalMenu = Product::count();
+
+        // === PERBAIKAN DI SINI (SESUAIKAN DENGAN MYSQL) ===
+
+        // Rekap Harian (MySQL)
+        // Menggunakan DATE()
+        $dailyStats = Order::selectRaw('DATE(created_at) as date, COUNT(*) as total_orders, SUM(total_price) as revenue')
+            ->where('status', 'paid')
+            ->groupBy('date')
+            ->orderBy('date', 'desc')
+            ->limit(30)
+            ->get();
+
+        // Rekap Bulanan (MySQL)
+        // Ganti 'strftime' menjadi 'DATE_FORMAT'
+        $monthlyStats = Order::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as total_orders, SUM(total_price) as revenue')
+            ->where('status', 'paid')
+            ->groupBy('month')
+            ->orderBy('month', 'desc')
+            ->get();
+
+        // Rekap Tahunan (MySQL)
+        // Ganti 'strftime' menjadi 'YEAR'
+        $yearlyStats = Order::selectRaw('YEAR(created_at) as year, COUNT(*) as total_orders, SUM(total_price) as revenue')
+            ->where('status', 'paid')
+            ->groupBy('year')
+            ->orderBy('year', 'desc')
+            ->get();
+
+        // === SELESAI ===
 
         // 2. Ambil Data untuk Tab "Kelola Menu"
         $products = Product::all();
@@ -31,16 +58,21 @@ class DashboardController extends Controller
             'totalOrder' => $totalOrder,
             'totalMenu' => $totalMenu,
             'products' => $products,
-            'orders' => $orders
+            'orders' => $orders,
+            // Kirim variabel statistik
+            'dailyStats' => $dailyStats,
+            'monthlyStats' => $monthlyStats,
+            'yearlyStats' => $yearlyStats
         ]);
     }
+
+    // ... (method lainnya seperti storeMenu, updateMenu, destroyMenu biarkan tetap sama)
 
     /**
      * MENYIMPAN MENU BARU (CREATE)
      */
     public function storeMenu(Request $request)
     {
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'category' => 'required|in:makanan,minuman',
@@ -49,20 +81,14 @@ class DashboardController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        // Proses Upload Gambar
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-
-            // PERBAIKAN 1: Tambahkan 'public' sebagai parameter ke-3 agar masuk disk yang benar
             $file->storeAs('images/menu', $filename, 'public');
-
-            // PERBAIKAN 2: Tambahkan 'storage/' agar path bisa dibaca browser
             $imagePath = 'storage/images/menu/' . $filename;
         }
 
-        // Simpan ke Database
         Product::create([
             'name' => $request->name,
             'category' => $request->category,
@@ -96,31 +122,20 @@ class DashboardController extends Controller
             'description' => $request->description
         ];
 
-        // Jika ada gambar baru yang diupload
         if ($request->hasFile('image')) {
-
-            // PERBAIKAN 3: Logika Hapus Gambar Lama yang lebih aman
             if ($product->image) {
-                // Kita perlu menghapus prefix 'storage/' untuk mendapatkan path file asli di disk
                 $oldPath = str_replace('storage/', '', $product->image);
                 if (Storage::disk('public')->exists($oldPath)) {
                     Storage::disk('public')->delete($oldPath);
                 }
             }
-
-            // Upload gambar baru
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
-
-            // Simpan ke disk 'public'
             $file->storeAs('images/menu', $filename, 'public');
-
-            // Simpan path dengan 'storage/'
             $data['image'] = 'storage/images/menu/' . $filename;
         }
 
         $product->update($data);
-
         return redirect()->back()->with('success', 'Menu berhasil diperbarui!');
     }
 
@@ -130,25 +145,16 @@ class DashboardController extends Controller
     public function destroyMenu($id)
     {
         $product = Product::findOrFail($id);
-
-        // PERBAIKAN 4: Logika Hapus Gambar saat Delete Menu
         if ($product->image) {
-            // Hapus prefix 'storage/' agar path sesuai dengan struktur folder di disk public
             $relativePath = str_replace('storage/', '', $product->image);
-
             if (Storage::disk('public')->exists($relativePath)) {
                 Storage::disk('public')->delete($relativePath);
             }
         }
-
         $product->delete();
-
         return redirect()->back()->with('success', 'Menu berhasil dihapus!');
     }
 
-    /**
-     * Mengubah status order menjadi PAID secara manual.
-     */
     public function markAsPaid($id)
     {
         $order = Order::findOrFail($id);
@@ -156,9 +162,6 @@ class DashboardController extends Controller
         return back()->with('success', 'Status pesanan berhasil diubah menjadi Lunas (Paid).');
     }
 
-    /**
-     * Menampilkan halaman khusus cetak struk.
-     */
     public function printReceipt($id)
     {
         $order = Order::with('items.product')->findOrFail($id);

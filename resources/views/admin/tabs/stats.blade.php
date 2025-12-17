@@ -1,4 +1,4 @@
-<div class="space-y-8 animate-fade-in-up">
+<div class="space-y-8 animate-fade-in-up" x-data="{ recapTab: 'daily' }">
 
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -12,7 +12,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-lg transition">
             <div class="absolute right-0 top-0 w-24 h-24 bg-blue-50 rounded-bl-full -mr-4 -mt-4 transition group-hover:scale-110"></div>
             <div class="relative z-10">
@@ -39,6 +38,111 @@
                 <h3 class="text-3xl font-bold text-[#2a231f]">{{ $totalMenu }}</h3>
                 <p class="text-xs text-gray-400 mt-2">Makanan & Minuman Aktif</p>
             </div>
+        </div>
+    </div>
+
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h3 class="font-bold text-lg text-[#2a231f]">Laporan Pendapatan</h3>
+                <p class="text-xs text-gray-400">Hanya menghitung pesanan dengan status 'Paid'.</p>
+            </div>
+
+            <div class="flex bg-gray-100 p-1 rounded-lg">
+                <button @click="recapTab = 'daily'"
+                    :class="recapTab === 'daily' ? 'bg-white text-[#c8a063] shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                    class="px-4 py-1.5 text-sm font-bold rounded-md transition-all">Harian</button>
+                <button @click="recapTab = 'monthly'"
+                    :class="recapTab === 'monthly' ? 'bg-white text-[#c8a063] shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                    class="px-4 py-1.5 text-sm font-bold rounded-md transition-all">Bulanan</button>
+                <button @click="recapTab = 'yearly'"
+                    :class="recapTab === 'yearly' ? 'bg-white text-[#c8a063] shadow-sm' : 'text-gray-500 hover:text-gray-700'"
+                    class="px-4 py-1.5 text-sm font-bold rounded-md transition-all">Tahunan</button>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left" x-show="recapTab === 'daily'">
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">Tanggal</th>
+                        <th class="px-6 py-4 text-center">Jml Transaksi</th>
+                        <th class="px-6 py-4 text-right">Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($dailyStats as $stat)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-mono text-sm text-gray-600">
+                            {{ \Carbon\Carbon::parse($stat->date)->translatedFormat('d F Y') }}
+                        </td>
+                        <td class="px-6 py-4 text-center font-bold text-gray-800">
+                            {{ $stat->total_orders }}
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold text-green-600">
+                            Rp {{ number_format($stat->revenue, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">Belum ada data pendapatan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <table class="w-full text-left" x-show="recapTab === 'monthly'" x-cloak>
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">Bulan</th>
+                        <th class="px-6 py-4 text-center">Jml Transaksi</th>
+                        <th class="px-6 py-4 text-right">Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($monthlyStats as $stat)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-mono text-sm text-gray-600">
+                            {{ \Carbon\Carbon::parse($stat->month)->translatedFormat('F Y') }}
+                        </td>
+                        <td class="px-6 py-4 text-center font-bold text-gray-800">
+                            {{ $stat->total_orders }}
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold text-green-600">
+                            Rp {{ number_format($stat->revenue, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">Belum ada data pendapatan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+
+            <table class="w-full text-left" x-show="recapTab === 'yearly'" x-cloak>
+                <thead class="bg-gray-50 text-gray-500 uppercase text-xs font-bold">
+                    <tr>
+                        <th class="px-6 py-4">Tahun</th>
+                        <th class="px-6 py-4 text-center">Jml Transaksi</th>
+                        <th class="px-6 py-4 text-right">Pendapatan</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($yearlyStats as $stat)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-mono text-sm text-gray-600">
+                            {{ $stat->year }}
+                        </td>
+                        <td class="px-6 py-4 text-center font-bold text-gray-800">
+                            {{ $stat->total_orders }}
+                        </td>
+                        <td class="px-6 py-4 text-right font-bold text-green-600">
+                            Rp {{ number_format($stat->revenue, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">Belum ada data pendapatan.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 

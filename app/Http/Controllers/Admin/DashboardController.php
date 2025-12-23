@@ -71,73 +71,82 @@ class DashboardController extends Controller
     /**
      * MENYIMPAN MENU BARU (CREATE)
      */
-    public function storeMenu(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|in:makanan,minuman',
-            'price' => 'required|integer',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'description' => 'nullable|string'
-        ]);
+public function storeMenu(Request $request)
+{
+    // Validasi input
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'required|in:makanan,minuman',
+        'price' => 'required|integer',
+        'stock' => 'required|integer|min:0', // <--- Validasi Stok
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'description' => 'nullable|string'
+    ]);
 
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('images/menu', $filename, 'public');
-            $imagePath = 'storage/images/menu/' . $filename;
-        }
-
-        Product::create([
-            'name' => $request->name,
-            'category' => $request->category,
-            'price' => $request->price,
-            'image' => $imagePath,
-            'description' => $request->description
-        ]);
-
-        return redirect()->back()->with('success', 'Menu baru berhasil ditambahkan!');
+    // ... (kode upload gambar tetap sama) ...
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->storeAs('images/menu', $filename, 'public');
+        $imagePath = 'storage/images/menu/' . $filename;
     }
+
+    // Simpan ke Database
+    Product::create([
+        'name' => $request->name,
+        'category' => $request->category,
+        'price' => $request->price,
+        'stock' => $request->stock, // <--- Simpan Stok
+        'image' => $imagePath,
+        'description' => $request->description
+    ]);
+
+    return redirect()->back()->with('success', 'Menu baru berhasil ditambahkan!');
+}
 
     /**
      * MENGUPDATE MENU (UPDATE)
      */
-    public function updateMenu(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
+public function updateMenu(Request $request, $id)
+{
+    $product = Product::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|in:makanan,minuman',
-            'price' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'description' => 'nullable|string'
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'category' => 'required|in:makanan,minuman',
+        'price' => 'required|integer',
+        'stock' => 'required|integer|min:0', // <--- Validasi Stok
+        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'description' => 'nullable|string'
+    ]);
 
-        $data = [
-            'name' => $request->name,
-            'category' => $request->category,
-            'price' => $request->price,
-            'description' => $request->description
-        ];
+    $data = [
+        'name' => $request->name,
+        'category' => $request->category,
+        'price' => $request->price,
+        'stock' => $request->stock, // <--- Update Stok
+        'description' => $request->description
+    ];
 
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                $oldPath = str_replace('storage/', '', $product->image);
-                if (Storage::disk('public')->exists($oldPath)) {
-                    Storage::disk('public')->delete($oldPath);
-                }
+    // ... (kode upload gambar tetap sama) ...
+    if ($request->hasFile('image')) {
+        if ($product->image) {
+            $oldPath = str_replace('storage/', '', $product->image);
+            if (Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
             }
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('images/menu', $filename, 'public');
-            $data['image'] = 'storage/images/menu/' . $filename;
         }
-
-        $product->update($data);
-        return redirect()->back()->with('success', 'Menu berhasil diperbarui!');
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->storeAs('images/menu', $filename, 'public');
+        $data['image'] = 'storage/images/menu/' . $filename;
     }
+
+    $product->update($data);
+
+    return redirect()->back()->with('success', 'Menu berhasil diperbarui!');
+}
 
     /**
      * MENGHAPUS MENU (DELETE)

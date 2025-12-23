@@ -8,6 +8,13 @@ use App\Http\Controllers\MidtransController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 
+
+use App\Http\Controllers\TriangleController;
+
+// Rute untuk Tugas Segitiga
+Route::get('/segitiga', [TriangleController::class, 'index'])->name('triangle.index');
+Route::post('/segitiga', [TriangleController::class, 'check'])->name('triangle.check');
+
 /*
 |--------------------------------------------------------------------------
 | Public Routes & Pelanggan Routes

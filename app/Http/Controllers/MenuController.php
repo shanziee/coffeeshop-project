@@ -17,7 +17,7 @@ class MenuController extends Controller
         // 1. AMBIL DATA PRODUK
         $menus = Product::all();
 
-        // Format data produk agar siap pakai di frontend
+        // Format data produk agar siap pakai di frontend (Alpine.js)
         $formattedMenus = $menus->map(function($item) {
             return [
                 'id' => $item->id,
@@ -25,7 +25,12 @@ class MenuController extends Controller
                 'price' => $item->price,
                 'category' => $item->category,
                 'description' => $item->description,
-                // KEMBALI KE KODE ASLI ANDA: Tanpa 'storage/'
+
+                // --- BAGIAN PENTING YANG DITAMBAHKAN ---
+                'stock' => $item->stock, // Wajib ada agar frontend tahu sisa stok
+                // ---------------------------------------
+
+                // Menggunakan asset() untuk generate URL gambar yang benar
                 'image' => asset($item->image),
             ];
         });

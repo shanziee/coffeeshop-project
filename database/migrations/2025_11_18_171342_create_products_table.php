@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('price');
-            $table->enum('category', ['minuman', 'makanan']);
+            $table->enum('category', ['minuman', 'makanan', 'snack']);
             $table->text('description')->nullable();
             $table->string('image')->nullable(); // Menyimpan path gambar
             $table->timestamps();

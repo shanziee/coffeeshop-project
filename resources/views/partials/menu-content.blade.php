@@ -9,7 +9,7 @@
     <div class="max-w-3xl mx-auto mb-12 space-y-6">
         <div class="relative">
             <input type="text" x-model="searchQuery" placeholder="Cari menu favoritmu..."
-                   class="w-full px-6 py-4 rounded-full border-2 border-gray-200 focus:border-brand-gold focus:ring-0 outline-none text-gray-700 shadow-sm transition pl-12">
+                class="w-full px-6 py-4 rounded-full border-2 border-gray-200 focus:border-brand-gold focus:ring-0 outline-none text-gray-700 shadow-sm transition pl-12">
             <svg class="w-6 h-6 text-gray-400 absolute left-4 top-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -26,10 +26,15 @@
                     class="px-6 py-2 rounded-full font-bold border-2 transition-all duration-300 w-32">
                 Makanan
             </button>
+            <button @click="activeTab = 'snack'"
+                    :class="activeTab === 'snack' ? 'bg-brand-dark text-white border-brand-dark' : 'bg-transparent text-brand-dark border-brand-dark hover:bg-brand-dark/5'"
+                    class="px-6 py-2 rounded-full font-bold border-2 transition-all duration-300 w-32">
+                snack
+            </button>
         </div>
     </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <template x-if="filteredMenus.length === 0">
             <div class="col-span-full text-center py-12 text-gray-500">
                 <p class="text-xl">Menu tidak ditemukan.</p>
@@ -41,8 +46,8 @@
 
                 <div class="relative w-full h-72 bg-white flex items-center justify-center overflow-hidden">
                     <img :src="menu.image"
-                         :alt="menu.name"
-                         class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">
+                        :alt="menu.name"
+                        class="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105">
                 </div>
 
                 <div class="p-6 relative flex flex-col flex-grow bg-white z-10">
@@ -50,13 +55,36 @@
                         <span x-text="formatCurrency(menu.price)"></span>
                     </div>
                     <h3 x-text="menu.name" class="font-display text-2xl font-bold text-brand-dark mb-2 mt-2"></h3>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow" x-text="menu.description"></p>
 
-                    <button type="button" @click="openDetail(menu)" class="w-full bg-brand-dark text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition flex justify-center items-center gap-2 group-hover:shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                        <span>Pilih</span>
-                    </button>
+                    {{-- Deskripsi --}}
+                    <p class="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2" x-text="menu.description"></p>
+
+                    {{-- Indikator Sisa Stok --}}
+                    <p class="text-xs font-bold mb-4"
+                    :class="menu.stock > 0 ? 'text-green-600' : 'text-red-500'"
+                    x-text="menu.stock > 0 ? 'Tersedia: ' + menu.stock + ' porsi' : 'Stok Habis'"></p>
+
+                    {{-- LOGIKA TOMBOL (PERUBAHAN UTAMA DI SINI) --}}
+                    <div class="mt-auto">
+                        {{-- Jika Stok Ada --}}
+                        <template x-if="menu.stock > 0">
+                            <button type="button" @click="openDetail(menu)" class="w-full bg-brand-dark text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition flex justify-center items-center gap-2 group-hover:shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                                <span>Pilih</span>
+                            </button>
+                        </template>
+
+                        {{-- Jika Stok Habis --}}
+                        <template x-if="!menu.stock || menu.stock <= 0">
+                            <button type="button" disabled class="w-full bg-gray-200 text-gray-400 py-3 rounded-xl font-semibold cursor-not-allowed flex justify-center items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                <span>Habis</span>
+                            </button>
+                        </template>
+                    </div>
+
                 </div>
             </div>
         </template>
     </div>
+</main>

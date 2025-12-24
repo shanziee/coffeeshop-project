@@ -13,15 +13,15 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Ambil Data Statistik Ringkas (Existing)
+        // 1. Ambil Data Statistik Ringkas
         $totalPendapatan = Order::where('status', 'paid')->sum('total_price');
         $totalOrder = Order::count();
         $totalMenu = Product::count();
 
-        // === PERBAIKAN DI SINI (SESUAIKAN DENGAN MYSQL) ===
+        // 2. Statistik Grafik (MySQL Compatible)
+        // Jika error SQL muncul di sini, pastikan database Anda MySQL/MariaDB, bukan SQLite.
 
-        // Rekap Harian (MySQL)
-        // Menggunakan DATE()
+        // Rekap Harian
         $dailyStats = Order::selectRaw('DATE(created_at) as date, COUNT(*) as total_orders, SUM(total_price) as revenue')
             ->where('status', 'paid')
             ->groupBy('date')
@@ -29,28 +29,22 @@ class DashboardController extends Controller
             ->limit(30)
             ->get();
 
-        // Rekap Bulanan (MySQL)
-        // Ganti 'strftime' menjadi 'DATE_FORMAT'
+        // Rekap Bulanan
         $monthlyStats = Order::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as total_orders, SUM(total_price) as revenue')
             ->where('status', 'paid')
             ->groupBy('month')
             ->orderBy('month', 'desc')
             ->get();
 
-        // Rekap Tahunan (MySQL)
-        // Ganti 'strftime' menjadi 'YEAR'
+        // Rekap Tahunan
         $yearlyStats = Order::selectRaw('YEAR(created_at) as year, COUNT(*) as total_orders, SUM(total_price) as revenue')
             ->where('status', 'paid')
             ->groupBy('year')
             ->orderBy('year', 'desc')
             ->get();
 
-        // === SELESAI ===
-
-        // 2. Ambil Data untuk Tab "Kelola Menu"
+        // 3. Ambil Data Produk & Order
         $products = Product::all();
-
-        // 3. Ambil Data untuk Tab "Riwayat Pesanan"
         $orders = Order::with(['user', 'items.product'])->latest()->get();
 
         return view('admin.dashboard', [
@@ -59,94 +53,95 @@ class DashboardController extends Controller
             'totalMenu' => $totalMenu,
             'products' => $products,
             'orders' => $orders,
-            // Kirim variabel statistik
             'dailyStats' => $dailyStats,
             'monthlyStats' => $monthlyStats,
             'yearlyStats' => $yearlyStats
         ]);
     }
 
-    // ... (method lainnya seperti storeMenu, updateMenu, destroyMenu biarkan tetap sama)
-
     /**
      * MENYIMPAN MENU BARU (CREATE)
      */
-public function storeMenu(Request $request)
-{
-    // Validasi input
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'category' => 'required|in:makanan,minuman',
-        'price' => 'required|integer',
-        'stock' => 'required|integer|min:0', // <--- Validasi Stok
-        'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        'description' => 'nullable|string'
-    ]);
+    public function storeMenu(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            // PERBAIKAN: Snack sudah ditambahkan di sini
+            'category' => 'required|in:minuman,makanan,snack',
+            'price' => 'required|integer',
+            'stock' => 'required|integer|min:0',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'description' => 'nullable|string'
+        ]);
 
-    // ... (kode upload gambar tetap sama) ...
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('images/menu', $filename, 'public');
-        $imagePath = 'storage/images/menu/' . $filename;
+        // Proses Upload Gambar
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('images/menu', $filename, 'public');
+            $imagePath = 'storage/images/menu/' . $filename;
+        }
+
+        // Simpan ke Database
+        Product::create([
+            'name' => $request->name,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'image' => $imagePath,
+            'description' => $request->description
+        ]);
+
+        return redirect()->back()->with('success', 'Menu baru berhasil ditambahkan!');
     }
-
-    // Simpan ke Database
-    Product::create([
-        'name' => $request->name,
-        'category' => $request->category,
-        'price' => $request->price,
-        'stock' => $request->stock, // <--- Simpan Stok
-        'image' => $imagePath,
-        'description' => $request->description
-    ]);
-
-    return redirect()->back()->with('success', 'Menu baru berhasil ditambahkan!');
-}
 
     /**
      * MENGUPDATE MENU (UPDATE)
      */
-public function updateMenu(Request $request, $id)
-{
-    $product = Product::findOrFail($id);
+    public function updateMenu(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
 
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'category' => 'required|in:makanan,minuman',
-        'price' => 'required|integer',
-        'stock' => 'required|integer|min:0', // <--- Validasi Stok
-        'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        'description' => 'nullable|string'
-    ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            // PERBAIKAN: Snack sudah ditambahkan di sini
+            'category' => 'required|in:minuman,makanan,snack',
+            'price' => 'required|integer',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'description' => 'nullable|string'
+        ]);
 
-    $data = [
-        'name' => $request->name,
-        'category' => $request->category,
-        'price' => $request->price,
-        'stock' => $request->stock, // <--- Update Stok
-        'description' => $request->description
-    ];
+        $data = [
+            'name' => $request->name,
+            'category' => $request->category,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'description' => $request->description
+        ];
 
-    // ... (kode upload gambar tetap sama) ...
-    if ($request->hasFile('image')) {
-        if ($product->image) {
-            $oldPath = str_replace('storage/', '', $product->image);
-            if (Storage::disk('public')->exists($oldPath)) {
-                Storage::disk('public')->delete($oldPath);
+        // Cek jika ada upload gambar baru
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama
+            if ($product->image) {
+                $oldPath = str_replace('storage/', '', $product->image);
+                if (Storage::disk('public')->exists($oldPath)) {
+                    Storage::disk('public')->delete($oldPath);
+                }
             }
+            // Upload gambar baru
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('images/menu', $filename, 'public');
+            $data['image'] = 'storage/images/menu/' . $filename;
         }
-        $file = $request->file('image');
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $file->storeAs('images/menu', $filename, 'public');
-        $data['image'] = 'storage/images/menu/' . $filename;
+
+        $product->update($data);
+
+        return redirect()->back()->with('success', 'Menu berhasil diperbarui!');
     }
-
-    $product->update($data);
-
-    return redirect()->back()->with('success', 'Menu berhasil diperbarui!');
-}
 
     /**
      * MENGHAPUS MENU (DELETE)
@@ -154,12 +149,14 @@ public function updateMenu(Request $request, $id)
     public function destroyMenu($id)
     {
         $product = Product::findOrFail($id);
+
         if ($product->image) {
             $relativePath = str_replace('storage/', '', $product->image);
             if (Storage::disk('public')->exists($relativePath)) {
                 Storage::disk('public')->delete($relativePath);
             }
         }
+
         $product->delete();
         return redirect()->back()->with('success', 'Menu berhasil dihapus!');
     }

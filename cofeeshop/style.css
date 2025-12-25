@@ -1,0 +1,568 @@
+/* ================================================== */
+/* 1. IMPORT FONT & PALET WARNA CSS VARIABLES */
+/* ================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Definisi Palet Warna Cokelat Konsisten */
+    --color-primary: #6F4E37; /* Cokelat Kopi Tua */
+    --color-secondary: #8D6E63; /* Cokelat Sedang/Media untuk tombol/aksen */
+    --color-accent: #D2B48C; /* Cokelat Muda/Latte untuk border/teks footer */
+    --color-background: #FDF8F0; /* Krem Lembut */
+    --color-text: #4A3F35; /* Cokelat Tua untuk teks */
+    --color-light-text: #FFFFFF; /* Putih */
+}
+
+/* ================================================== */
+/* 2. RESET DASAR & TYPOGRAPHY */
+/* ================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+.hidden {
+    display: none !important;
+}
+.fade-out {
+    opacity: 0;
+}
+
+/* ================================================== */
+/* 3. SPLASH SCREEN */
+/* ================================================== */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-primary); /* Warna Kopi */
+    color: var(--color-light-text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1000;
+    transition: opacity 0.8s ease-out;
+}
+#splash-screen .logo img {
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+#splash-screen h1 {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+}
+
+/* ================================================== */
+/* 4. HEADER (DENGAN GAMBAR LATAR & OVERLAY) */
+/* ================================================== */
+header {
+    background-image: url('https://via.placeholder.com/1200x300/4A3F35/FFFFFF?text=Coffee+Beans+Background');
+    background-color: var(--color-primary); 
+    background-size: cover; 
+    background-position: center; 
+    
+    position: relative; 
+    z-index: 1; 
+    
+    color: var(--color-light-text);
+    padding: 3rem 1rem; 
+    text-align: center;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+/* TAMBAHKAN OVERLAY HITAM */
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); 
+    z-index: -1;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+header h2, header p {
+    position: relative;
+    z-index: 2; 
+}
+
+header h2 {
+    font-family: 'Lora', serif;
+    font-size: 3rem; 
+    letter-spacing: 2px; 
+    margin-bottom: 0.5rem;
+}
+
+/* --- KODE MAIN CONTENT --- */
+main {
+    padding: 1.5rem;
+}
+
+/* --- Filter Menu --- */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.filter-btn {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid var(--color-accent); 
+    background-color: transparent;
+    color: var(--color-primary);
+    border-radius: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.filter-btn:hover {
+    background-color: var(--color-accent);
+    color: var(--color-light-text);
+}
+.filter-btn.active {
+    background-color: var(--color-primary);
+    color: var(--color-light-text);
+    border-color: var(--color-primary);
+}
+
+/* --- Grid Menu --- */
+.menu-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 1 kolom di mobile */
+    gap: 1.5rem;
+}
+.menu-item {
+    background-color: var(--color-light-text);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+.menu-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+.menu-item h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.4rem;
+    margin: 1rem 1rem 0.5rem 1rem;
+}
+.menu-item p {
+    font-size: 0.9rem;
+    margin: 0 1rem 1rem 1rem;
+    color: #7a6a5d;
+}
+.price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-align: right;
+    margin: 0 1rem 1rem 1rem;
+}
+
+/* ================================================== */
+/* 5. MODAL STYLING (KUSTOMISASI & CHECKOUT) */
+/* ================================================== */
+.modal {
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--color-background);
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    color: var(--color-text);
+}
+
+/* --- Ukuran Modal Khas --- */
+.large-modal { max-width: 600px; } /* Untuk Keranjang Belanja */
+.small-modal { max-width: 400px; } /* Untuk Konfirmasi Pembayaran */
+
+
+.close-btn {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--color-primary);
+}
+
+.modal-content h3 {
+    font-family: 'Lora', serif;
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 5px;
+}
+
+.modal-content hr {
+    border: 0;
+    border-top: 1px solid var(--color-accent);
+    margin: 15px 0;
+}
+
+.customization-group {
+    margin-bottom: 20px;
+}
+
+.customization-group h4 {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.options-inline label {
+    margin-right: 15px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+/* --- Input Form --- */
+#order-notes, #table-number {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-accent);
+    border-radius: 5px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+}
+#order-notes {
+    height: 80px; 
+}
+#table-number {
+    height: auto;
+    text-align: center;
+}
+.vertical-options label {
+    display: block; 
+    padding: 8px 0;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--color-background);
+}
+
+/* --- Tombol Checkout --- */
+.btn-checkout {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-checkout:hover {
+    background-color: var(--color-secondary);
+}
+
+
+/* --- TAMBAHAN UNTUK MODAL KERANJANG BARU (CHECKOUT) --- */
+.modal-title {
+    font-family: 'Lora', serif;
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+/* --- Daftar Item Keranjang --- */
+.cart-items-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px; 
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-accent);
+}
+
+.item-details-cart {
+    flex-grow: 1;
+}
+
+.item-name-cart {
+    font-weight: 600;
+}
+
+.item-options {
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+    margin-top: 2px;
+}
+
+.item-quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.item-price-cart {
+    font-weight: 700;
+    color: var(--color-primary);
+    text-align: right;
+    min-width: 80px;
+}
+
+.empty-cart-message {
+    text-align: center;
+    color: var(--color-secondary);
+    padding: 20px 0;
+}
+
+/* --- Ringkasan Total --- */
+.cart-summary {
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 1rem;
+    color: var(--color-text);
+}
+
+.total-line {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 2px solid var(--color-secondary);
+}
+
+.total-price-text {
+    font-size: 1.5rem !important; 
+    color: #E91E63; /* Merah cerah untuk penekanan total */
+    font-weight: 700;
+}
+
+#checkout-btn {
+    margin-top: 20px;
+}
+
+
+/* ================================================== */
+/* 7. FLOATING CART STYLING */
+/* ================================================== */
+.floating-cart {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 3000; 
+    background-color: var(--color-primary); 
+    color: var(--color-light-text);
+    padding: 10px 15px;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: opacity 0.5s ease;
+}
+
+.hidden-cart {
+    display: none;
+    opacity: 0;
+}
+
+.cart-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.cart-count {
+    background-color: #E91E63; 
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 8px;
+    position: relative;
+    right: 5px; 
+}
+
+.icon-checkout {
+    margin-left: 8px;
+}
+
+
+/* ================================================== */
+/* 8. FOOTER MULTI-KOLOM */
+/* ================================================== */
+.footer-section {
+    background-color: var(--color-primary);
+    color: var(--color-accent);
+    padding: 40px 20px 10px;
+    font-size: 0.9rem;
+    line-height: 1.8;
+    margin-top: 2rem;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--color-secondary);
+}
+
+.footer-col {
+    width: 100%;
+    margin-bottom: 25px;
+    padding: 0 15px;
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-light-text);
+    margin-bottom: 15px;
+}
+
+.footer-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-light-text);
+    margin-bottom: 15px;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-links a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: var(--color-light-text);
+}
+
+/* --- Social Links (MODIFIED for IG and WA) --- */
+.social-links {
+    margin-top: 15px;
+    display: flex; 
+    gap: 10px; 
+}
+
+.social-icon {
+    width: 40px; 
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    background-color: var(--color-secondary);
+    color: var(--color-light-text);
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600; 
+    transition: background-color 0.2s;
+}
+
+.social-icon:hover {
+    background-color: var(--color-accent); 
+}
+
+
+/* --- Copyright --- */
+.copyright {
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+}
+
+
+/* ================================================== */
+/* 9. MEDIA QUERIES */
+/* ================================================== */
+@media (min-width: 600px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+@media (min-width: 768px) {
+    /* Layout Footer Desktop */
+    .footer-info {
+        width: 40%;
+    }
+    .footer-col {
+        width: 25%;
+    }
+}
+@media (min-width: 900px) {
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr); 
+    }
+    main {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+}
+

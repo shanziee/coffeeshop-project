@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigiMenu - Kopi Nusantara</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="splash-screen">
+        <div class="logo">
+            <img src="https://via.placeholder.com/100x100/6F4E37/FFFFFF?text=Logo" alt="Logo Coffee Shop">
+            <h1>Selamat Datang!</h1>
+            <p>Memuat menu...</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <header>
+            <h2>Kopi Nusantara</h2>
+            <p>Pesan Langsung dari Meja Anda</p>
+        </header>
+
+        <main>
+            <div class="filter-container">
+                <button class="filter-btn active" data-filter="semua">Semua</button>
+                <button class="filter-btn" data-filter="kopi">Kopi</button>
+                <button class="filter-btn" data-filter="non-kopi">Non-Kopi</button>
+                <button class="filter-btn" data-filter="makanan">Makanan</button>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-item kopi" data-name="Espresso" data-price="18000" data-category="kopi">
+                    <img src="espresso.webp" alt="Espresso">
+                    <h3>Espresso</h3>
+                    <p>Ekstrak kopi murni kaya rasa.</p>
+                    <div class="price">Rp 18.000</div>
+                </div>
+                <div class="menu-item kopi" data-name="Caffè Latte" data-price="25000" data-category="kopi">
+                    <img src="caffe-latte.webp" alt="Caffe Latte">
+                    <h3>Caffè Latte</h3>
+                    <p>Espresso dengan steamed milk lembut.</p>
+                    <div class="price">Rp 25.000</div>
+                </div>
+                <div class="menu-item kopi" data-name="Cappuccino" data-price="25000" data-category="kopi">
+                    <img src="cappucino.webp" alt="Cappuccino">
+                    <h3>Cappuccino</h3>
+                    <p>Kombinasi seimbang espresso dan foam.</p>
+                    <div class="price">Rp 25.000</div>
+                </div>
+
+                <div class="menu-item non-kopi" data-name="Signature Chocolate" data-price="28000" data-category="non-kopi">
+                    <img src="signature-chocolate.jpeg" alt="Chocolate">
+                    <h3>Signature Chocolate</h3>
+                    <p>Cokelat premium hangat atau dingin.</p>
+                    <div class="price">Rp 28.000</div>
+                </div>
+                <div class="menu-item non-kopi" data-name="Matcha Latte" data-price="28000" data-category="non-kopi">
+                    <img src="matcha-latte.webp" alt="Matcha Latte">
+                    <h3>Matcha Latte</h3>
+                    <p>Teh hijau Jepang dengan susu lembut.</p>
+                    <div class="price">Rp 28.000</div>
+                </div>
+
+                <div class="menu-item makanan" data-name="Butter Croissant" data-price="22000" data-category="makanan">
+                    <img src="butter-croissant.webp" alt="Croissant">
+                    <h3>Butter Croissant</h3>
+                    <p>Pastry renyah dengan mentega premium.</p>
+                    <div class="price">Rp 22.000</div>
+                </div>
+                <div class="menu-item makanan" data-name="Choco Chip Cookies" data-price="15000" data-category="makanan">
+                    <img src="choco-chip-cookkies.webp" alt="Cookies">
+                    <h3>Choco Chip Cookies</h3>
+                    <p>Kue kering renyah dengan butiran cokelat.</p>
+                    <div class="price">Rp 15.000</div>
+                </div>
+                <div class="menu-item makanan" data-name="French-Fries" data-price="15000" data-category="makanan">
+                    <img src="french-fries.jpg" alt="french">
+                    <h3>French Fries</h3>
+                    <p>kentang goreng gurih, renyah, dan hangat..</p>
+                    <div class="price">Rp 15.000</div>
+                </div>
+                <div class="menu-item makanan" data-name="Cheese Pastry" data-price="15000" data-category="makanan">
+                    <img src="Cream-Cheese-Puff-Pastry-Dansih.jpg" alt="french">
+                    <h3>Cheese Pastry</h3>
+                    <p>Pastry lembut berlapis keju manis gurih...</p>
+                    <div class="price">Rp 15.000</div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="order-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h3 id="modal-item-name"></h3>
+                <p id="modal-item-price"></p>
+                
+                <hr>
+
+                <div class="customization-group">
+                    <h4>Tingkat Gula:</h4>
+                    <div class="options-inline">
+                        <label><input type="radio" name="sugar" value="normal" checked> Normal</label>
+                        <label><input type="radio" name="sugar" value="less"> Kurang</label>
+                        <label><input type="radio" name="sugar" value="none"> Tanpa Gula</label>
+                    </div>
+                </div>
+
+                <div class="customization-group">
+                    <h4>Suhu:</h4>
+                    <div class="options-inline">
+                        <label><input type="radio" name="temp" value="hot" checked> Panas</label>
+                        <label><input type="radio" name="temp" value="ice"> Dingin (+Rp 2.000)</label>
+                    </div>
+                </div>
+                
+                <div class="customization-group">
+                    <h4>Catatan Tambahan:</h4>
+                    <textarea id="order-notes" placeholder="Contoh: Tanpa cinnamon, es terpisah..."></textarea>
+                </div>
+
+                <button id="add-to-cart-btn" class="btn-checkout">Tambah ke Keranjang</button>
+            </div>
+        </div>
+
+    </div> 
+
+    <footer class="footer-section">
+        <div class="footer-container">
+            
+            <div class="footer-col footer-info">
+                <h3 class="footer-logo">KOPI NUSANTARA</h3>
+                <p>Temukan kualitas kopi terbaik untuk menemani setiap aktivitas Anda, di rumah maupun di kantor. Kami hadir untuk kehangatan Nusantara.</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/kopinusantara_resmi" target="_blank" class="social-icon">IG</a>
+                    <a href="https://wa.me/6285777496199" target="_blank" class="social-icon">WA</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-title">INFORMASI TOKO</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Tentang Kami</a></li>
+                    <li><a href="#">Kontak Kami</a></li>
+                    <li><a href="#">FAQ & Bantuan</a></li>
+                    <li><a href="#">Karir</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4 class="footer-title">LAYANAN & PRODUK</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Menu Kopi</a></li>
+                    <li><a href="#">Menu Makanan</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                    <li><a href="#">Kebijakan Privasi</a></li>
+                </ul>
+            </div>
+
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2025 Kopi Nusantara. Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <div id="floating-cart" class="floating-cart hidden-cart">
+        <span id="cart-count" class="cart-count">0</span>
+        <button class="cart-button">
+            Lihat Keranjang
+            <span class="icon-checkout">🛒</span> 
+        </button>
+    </div>
+    
+    <div id="checkout-modal" class="modal hidden">
+        <div class="modal-content large-modal">
+            <span class="close-btn checkout-close">&times;</span>
+            <h3 class="modal-title">Keranjang Belanja Anda</h3>
+            
+            <hr>
+
+            <div id="cart-items-list" class="cart-items-list">
+                <p class="empty-cart-message">Keranjang masih kosong. Silakan tambahkan menu favorit Anda!</p>
+            </div>
+
+            <hr>
+            
+            <div class="cart-summary">
+                <div class="summary-line">
+                    <span>Subtotal:</span>
+                    <span id="subtotal-price">Rp 0</span>
+                </div>
+                <div class="summary-line">
+                    <span>Biaya Layanan:</span>
+                    <span id="service-fee">Rp 2.000</span>
+                </div>
+                <div class="summary-line total-line">
+                    <h4>Total Pembayaran:</h4>
+                    <h4 id="total-price" class="total-price-text">Rp 2.000</h4>
+                </div>
+            </div>
+
+            <button id="checkout-btn" class="btn-checkout">Bayar Sekarang</button>
+        </div>
+    </div>
+    
+    <div id="payment-modal" class="modal hidden">
+        <div class="modal-content small-modal">
+            <span class="close-btn payment-close">&times;</span>
+            <h3 class="modal-title">Konfirmasi & Pembayaran</h3>
+            
+            <hr>
+
+            <div class="payment-summary">
+                <p class="summary-label">Total Pesanan:</p>
+                <h4 id="final-total-display" class="total-price-text">Rp 0</h4>
+            </div>
+
+            <hr>
+
+            <div class="customization-group">
+                <h4>Pilih Metode Pembayaran:</h4>
+                <div class="options-inline vertical-options">
+                    <label><input type="radio" name="payment_method" value="cash" checked> Tunai (Bayar di Kasir)</label>
+                    <label><input type="radio" name="payment_method" value="transfer"> Transfer Bank / QRIS</label>
+                </div>
+            </div>
+
+            <div class="customization-group">
+                <h4>Nomor Meja:</h4>
+                <input type="number" id="table-number" placeholder="Contoh: 05" required>
+            </div>
+
+            <button id="place-order-btn" class="btn-checkout">Konfirmasi Pesanan</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
